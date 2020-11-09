@@ -6,11 +6,15 @@ const Post = require('./models/post');
 
 const app = express();
 
-mongoose.connect('mongodb+srv://post-app-user:IgyYmmBUg3iOpQWl@cluster0.ro4m4.mongodb.net/posts?retryWrites=true&w=majority').then(() => {
+mongoose.connect('mongodb+srv://post-app-user:IgyYmmBUg3iOpQWl@cluster0.ro4m4.mongodb.net/posts?retryWrites=true&w=majority', {
+  useNewUrlParser: true
+}).then(() => {
   console.log('Connected to database');
 }).catch(() => {
   console.log('Connection failed!');
 });
+
+mongoose.set('useUnifiedTopology', true);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -44,5 +48,16 @@ app.get('/api/posts', (req, res, next) => {
   });
 });
 
+app.delete('/api/posts/:id', (req, res, next) => {
+  console.log(req.params.id);
+  Post.deleteOne({
+    _id: req.params.id
+  }).then(result => {
+    console.log(result);
+    res.status(200).json({
+      message: 'Post deleted!'
+    });
+  });
+});
 
 module.exports = app;
